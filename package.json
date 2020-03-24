@@ -1,0 +1,26 @@
+{
+  "name": "blah-bot",
+  "version": "1.0.0",
+  "description": "BlahBot is a discord bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "server": "nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Borys35/BlahBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Borys35/BlahBot/issues"
+  },
+  "homepage": "https://github.com/Borys35/BlahBot#readme",
+  "dependencies": {
+    "discord.js": "^12.0.2",
+    "express": "^4.17.1"
+  }
+}
