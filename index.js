@@ -30,7 +30,7 @@ fs.readdirSync('./commands').forEach(dir => {
 
 client.on('ready', () => {
   console.log(`Logged in`);
-  client.user.setActivity('>help', { type: 'LISTENING' });
+  client.user.setActivity('>help');
 });
 
 client.on('message', msg => {
@@ -40,9 +40,9 @@ client.on('message', msg => {
     .slice(prefix.length)
     .trim()
     .split(' ');
-  const cmd = args.shift().toLowerCase();
+  const cmdName = args.shift().toLowerCase();
 
-  const command = commands.get(cmd);
+  const command = commands.get(cmdName);
   if (command) command.run(client, msg, args);
 });
 
