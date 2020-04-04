@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Discord = require('discord.js');
 const fs = require('fs');
 
@@ -15,7 +16,7 @@ Discord.Structures.extend('Guild', (Guild) => {
 
 const client = new Discord.Client();
 const commands = new Discord.Collection();
-const { prefix, token } = require('./config.json');
+const { PREFIX, TOKEN } = process.env;
 
 fs.readdirSync('./commands').forEach((dir) => {
   fs.readdirSync(`./commands/${dir}`)
@@ -28,18 +29,18 @@ fs.readdirSync('./commands').forEach((dir) => {
 
 client.on('ready', () => {
   console.log('Logged in');
-  client.user.setActivity(`${prefix}help`);
+  client.user.setActivity(`${PREFIX}help`);
 });
 
 client.on('message', (msg) => {
   if (msg.author.bot) return;
   if (msg.content === '❤️') return msg.channel.send('❤️');
-  if (!msg.content.startsWith(prefix)) return;
-  const args = msg.content.slice(prefix.length).trim().split(' ');
+  if (!msg.content.startsWith(PREFIX)) return;
+  const args = msg.content.slice(PREFIX.length).trim().split(' ');
   const cmdName = args.shift().toLowerCase();
 
   const command = commands.get(cmdName);
   if (command) command.run(client, msg, args);
 });
 
-client.login(token);
+client.login(TOKEN);

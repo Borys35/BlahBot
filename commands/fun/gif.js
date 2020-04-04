@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { tenorKey } = require('../../config.json');
+const { TENOR_KEY } = process.env;
 
 module.exports = {
   name: 'gif',
@@ -10,8 +10,8 @@ module.exports = {
       message.reply('you know, you can add argument here, right? 😟');
     }
     const { results } = await fetch(
-      `https://api.tenor.com/v1/random?q=${search}&key=${tenorKey}&limit=1&contentfilter=high`
-    ).then(res => res.json());
+      `https://api.tenor.com/v1/random?q=${search}&key=${TENOR_KEY}&limit=1&contentfilter=high`
+    ).then((res) => res.json());
     message.reply(results[0].url);
-  }
+  },
 };
