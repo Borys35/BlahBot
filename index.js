@@ -7,6 +7,7 @@ Discord.Structures.extend('Guild', (Guild) => {
       super(client, data);
       this.music = {
         queue: [],
+        songDispatcher: null,
       };
     }
   };
@@ -26,12 +27,13 @@ fs.readdirSync('./commands').forEach((dir) => {
 });
 
 client.on('ready', () => {
-  console.log(`Logged in`);
-  client.user.setActivity('>help');
+  console.log('Logged in');
+  client.user.setActivity(`${prefix}help`);
 });
 
 client.on('message', (msg) => {
   if (msg.author.bot) return;
+  if (msg.content === '❤️') return msg.channel.send('❤️');
   if (!msg.content.startsWith(prefix)) return;
   const args = msg.content.slice(prefix.length).trim().split(' ');
   const cmdName = args.shift().toLowerCase();

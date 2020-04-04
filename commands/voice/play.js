@@ -1,15 +1,17 @@
 const { MessageEmbed } = require('discord.js');
 const ytdl = require('ytdl-core');
 
-function play(connection, song, queue, message) {
+function play(connection, song, message) {
   const { title, video_url } = song;
-  connection
+
+  const dispatcher = connection
     .play(
       ytdl(video_url, {
-        filter: 'audioonly'
+        filter: 'audioonly',
       })
     )
     .on('start', () => {
+      message.guild.music.songDispatcher = dispatcher;
       const embed = new MessageEmbed()
         .setTitle('current song')
         .addField('title', title)
@@ -17,9 +19,10 @@ function play(connection, song, queue, message) {
       message.channel.send(embed);
     })
     .on('finish', () => {
+      const { queue } = message.guild.music;
       queue.shift();
       if (!queue.length) message.reply('no more songs 😩');
-      else play(connection, queue[0], queue, message);
+      else play(connection, queue[0], message);
     })
     .on('error', () => {
       message.reply('error...');
@@ -43,29 +46,10 @@ module.exports = {
         );
         queue.push(song);
 
-        // const embed = new MessageEmbed()
-        //   .setTitle('current song')
-        //   .addField('title', title)
-        //   .setURL(video_url);
-        // message.channel.send(embed);
-
         if (!playing) {
           const connection = await message.member.voice.channel.join();
-          play(connection, song, queue, message);
+          play(connection, song, message);
         }
-
-        // connection
-        //   .play(
-        //     ytdl(video_url, {
-        //       filter: 'audioonly'
-        //     })
-        //   )
-        //   .on('finish', () => {
-        //     message.reply('next song');
-        //   })
-        //   .on('error', () => {
-        //     message.reply('error 😡');
-        //   });
       } catch (err) {
         console.error(err);
         message.reply('invalid url 😡');
@@ -73,5 +57,5 @@ module.exports = {
     } else {
       message.reply('you have to be on a voice channel 😡');
     }
-  }
+  },
 };

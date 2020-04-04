@@ -1,17 +1,18 @@
+const { MessageEmbed } = require('discord.js');
 const fs = require('fs');
 
 module.exports = {
   name: 'commands',
   run: (client, message, args) => {
-    let result = 'my commands are:';
-    fs.readdirSync('./commands').forEach(dir => {
-      result += `\n**${dir}:**\n`;
-      fs.readdirSync(`./commands/${dir}`).forEach(file => {
-        const { name } = require(`../${dir}/${file}`);
-        result += `${name}, `;
-      });
-      result += '\n';
+    const embed = new MessageEmbed().setTitle('commands');
+    fs.readdirSync('./commands').forEach((dir) => {
+      const commands = fs
+        .readdirSync(`./commands/${dir}`)
+        .filter((f) => f.endsWith('.js'))
+        .map((f) => (f = require(`../${dir}/${f}`).name))
+        .join(', ');
+      embed.addField(dir, commands);
     });
-    message.reply(result);
-  }
+    message.channel.send(embed);
+  },
 };
