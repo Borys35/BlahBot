@@ -13,6 +13,13 @@ async function addSong(video, message) {
   };
   const playing = !!queue.length;
   queue.push(song);
+
+  const embed = new MessageEmbed()
+    .setTitle('added')
+    .setURL(song.url)
+    .addField('title', song.title);
+  message.channel.send(embed);
+
   if (!playing) {
     const connection = await message.member.voice.channel.join();
     play(connection, song, message);
@@ -32,15 +39,19 @@ function play(connection, song, message) {
       message.guild.music.songDispatcher = dispatcher;
       const embed = new MessageEmbed()
         .setTitle('current song')
-        .addField('title', title)
-        .setURL(url);
+        .setURL(url)
+        .addField('title', title);
       message.channel.send(embed);
     })
     .on('finish', () => {
       const { queue } = message.guild.music;
       queue.shift();
-      if (!queue.length) message.reply('no more songs 😩');
-      else play(connection, queue[0], message);
+      if (!queue.length) {
+        message.reply('no more songs 😩');
+        message.guild.me.voice.channel.leave();
+      } else {
+        play(connection, queue[0], message);
+      }
     })
     .on('error', () => {
       message.reply('error...');
@@ -50,8 +61,8 @@ function play(connection, song, message) {
 
 module.exports = {
   name: 'play',
+  aliases: ['p'],
   run: async (client, message, args) => {
-    message.reply('yes your grace');
     if (message.member.voice.channel) {
       const query = args[0];
       // IF NO ARG'S GIVEN

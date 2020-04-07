@@ -16,6 +16,7 @@ Discord.Structures.extend('Guild', (Guild) => {
 
 const client = new Discord.Client();
 const commands = new Discord.Collection();
+const aliases = new Discord.Collection();
 const { PREFIX, TOKEN } = process.env;
 
 fs.readdirSync('./commands').forEach((dir) => {
@@ -24,6 +25,11 @@ fs.readdirSync('./commands').forEach((dir) => {
     .forEach((f) => {
       const command = require(`./commands/${dir}/${f}`);
       commands.set(command.name, command);
+      if (command.aliases) {
+        for (const alias of command.aliases) {
+          aliases.set(alias, command.name);
+        }
+      }
     });
 });
 
@@ -39,7 +45,7 @@ client.on('message', (msg) => {
   const args = msg.content.slice(PREFIX.length).trim().split(' ');
   const cmdName = args.shift().toLowerCase();
 
-  const command = commands.get(cmdName);
+  const command = commands.get(cmdName) || commands.get(aliases.get(cmdName));
   if (command) command.run(client, msg, args);
 });
 
