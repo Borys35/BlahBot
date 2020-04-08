@@ -97,7 +97,7 @@ module.exports = {
   aliases: ['p', 'add'],
   run: async (client, message, args) => {
     if (message.member.voice.channel) {
-      const query = args[0];
+      const query = args.join(' ');
       // IF NO ARG'S GIVEN
       if (!query) {
         return message.reply('you have to give arg after the command 😡');
