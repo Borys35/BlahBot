@@ -34,7 +34,9 @@ fs.readdirSync('./commands').forEach((dir) => {
 });
 
 client.on('ready', () => {
-  console.log('Logged in');
+  console.log(
+    `Logged in on ${client.guilds.cache.size} guilds available for ${client.users.cache.size} users as ${client.user.tag}`
+  );
   client.user.setActivity(`${PREFIX}help`);
 });
 

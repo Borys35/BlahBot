@@ -1,6 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const ytdl = require('ytdl-core');
 const Youtube = require('simple-youtube-api');
+const { formatDuration } = require('../../utils');
 
 const youtube = new Youtube(process.env.YOUTUBE_API);
 
@@ -15,14 +16,45 @@ async function addSong(video, message) {
   queue.push(song);
 
   const embed = new MessageEmbed()
-    .setTitle('added')
+    .setTitle('added song')
     .setURL(song.url)
-    .addField('title', song.title);
+    .addField('title', song.title)
+    .addField('duration', formatDuration(song.duration));
   message.channel.send(embed);
 
   if (!playing) {
     const connection = await message.member.voice.channel.join();
     play(connection, song, message);
+  }
+}
+
+async function addPlaylist(playlist, message) {
+  const { queue } = message.guild.music;
+  const playing = !!queue.length;
+  const videos = await playlist.getVideos();
+  let duration = 0;
+  for (const video of videos) {
+    const fetched = await video.fetch();
+    const song = {
+      title: fetched.title,
+      url: fetched.url,
+      duration: fetched.durationSeconds,
+    };
+    duration += song.duration;
+    queue.push(song);
+  }
+
+  const embed = new MessageEmbed()
+    .setTitle('added playlist')
+    .setURL(playlist.url)
+    .addField('title', playlist.title)
+    .addField('songs', videos.length)
+    .addField('duration', formatDuration(duration));
+  message.channel.send(embed);
+
+  if (!playing) {
+    const connection = await message.member.voice.channel.join();
+    play(connection, queue[0], message);
   }
 }
 
@@ -40,7 +72,8 @@ function play(connection, song, message) {
       const embed = new MessageEmbed()
         .setTitle('current song')
         .setURL(url)
-        .addField('title', title);
+        .addField('title', title)
+        .addField('duration', formatDuration(duration));
       message.channel.send(embed);
     })
     .on('finish', () => {
@@ -48,20 +81,20 @@ function play(connection, song, message) {
       queue.shift();
       if (!queue.length) {
         message.reply('no more songs 😩');
-        message.guild.me.voice.channel.leave();
+        const { channel } = message.guild.me.voice;
+        if (channel) channel.leave();
       } else {
         play(connection, queue[0], message);
       }
     })
     .on('error', () => {
-      message.reply('error...');
-      setTimeout(() => message.reply("and it's may be even mine 😩"), 1000);
+      message.reply('error, try again later');
     });
 }
 
 module.exports = {
   name: 'play',
-  aliases: ['p'],
+  aliases: ['p', 'add'],
   run: async (client, message, args) => {
     if (message.member.voice.channel) {
       const query = args[0];
@@ -73,10 +106,7 @@ module.exports = {
       else if (query.match(/^.*(youtu.be\/|list=)([^#\&\?]*).*/)) {
         try {
           const playlist = await youtube.getPlaylist(query);
-          const videos = await playlist.getVideos();
-          for (const video of videos) {
-            addSong(video, message);
-          }
+          addPlaylist(playlist, message);
         } catch (err) {
           console.error(err);
         }
@@ -97,7 +127,8 @@ module.exports = {
       else {
         try {
           const videos = await youtube.searchVideos(query, 1);
-          addSong(videos[0], message);
+          const video = await videos[0].fetch();
+          addSong(video, message);
         } catch (err) {
           console.error(err);
         }

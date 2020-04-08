@@ -19,6 +19,15 @@ module.exports = {
         { name: 'id', value: user.id },
         { name: 'tag', value: user.tag },
         {
+          name: 'joined',
+          value: `#${
+            member.guild.members.cache
+              .sort((m1, m2) => m1.joinedTimestamp - m2.joinedTimestamp)
+              .array()
+              .findIndex((m) => m.id === member.id) + 1
+          }`,
+        },
+        {
           name: 'joined server',
           value: formatDate(member.joinedAt),
           inline: true,

@@ -1,18 +1,20 @@
 const { MessageEmbed } = require('discord.js');
-const { formatDate, formatDateDiff } = require('../../utils');
+const { formatDate, formatDateDiff, getHourTime } = require('../../utils');
 
 module.exports = {
   name: 'uptime',
   run: (client, message, args) => {
-    const embed = new MessageEmbed()
-      .setTitle('my uptime')
-      .addFields(
-        { name: 'since', value: formatDate(client.readyAt) },
-        {
-          name: 'for',
-          value: `${formatDateDiff(client.readyAt, new Date())} hours`,
-        }
-      );
+    const { readyAt } = client;
+    const embed = new MessageEmbed().setTitle('my uptime').addFields(
+      {
+        name: 'since',
+        value: `${formatDate(readyAt)} (${getHourTime(readyAt)})`,
+      },
+      {
+        name: 'for',
+        value: `${formatDateDiff(readyAt, new Date())} hours`,
+      }
+    );
     message.channel.send(embed);
   },
 };

@@ -1,6 +1,6 @@
 module.exports = {
   name: 'clear',
-  aliases: ['leave'],
+  aliases: ['c', 'leave'],
   run: (client, message, args) => {
     message.guild.music.queue = [];
     message.reply('queue has been cleared');
