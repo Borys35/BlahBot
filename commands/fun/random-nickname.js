@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 module.exports = {
-  name: 'random-nickname',
+  name: 'randomnickname',
   run: async (client, message, args) => {
     let { nickname, success } = await fetch(
       'https://api.codetunnel.net/random-nick',
