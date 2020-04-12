@@ -9,6 +9,7 @@ Discord.Structures.extend('Guild', (Guild) => {
       this.music = {
         queue: [],
         songDispatcher: null,
+        looping: false,
       };
     }
   };

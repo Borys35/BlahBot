@@ -77,8 +77,8 @@ function play(connection, song, message) {
       message.channel.send(embed);
     })
     .on('finish', () => {
-      const { queue } = message.guild.music;
-      queue.shift();
+      const { queue, looping } = message.guild.music;
+      if (!looping) queue.shift();
       if (!queue.length) {
         message.reply('no more songs 😩');
         const { channel } = message.guild.me.voice;
