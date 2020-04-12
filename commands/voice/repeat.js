@@ -1,9 +1,14 @@
 module.exports = {
   name: 'repeat',
-  aliases: ['r', 'loop'],
+  aliases: ['r', 'loop', 'l'],
   run: (client, message, args) => {
-    const { looping } = message.guild.music;
-    looping = !looping;
-    message.reply(looping ? 'loop is on!' : 'loop is off!');
+    if (message.member.voice.channel) {
+      message.guild.music.looping = !message.guild.music.looping;
+      message.reply(
+        message.guild.music.looping ? 'loop is on!' : 'loop is off!'
+      );
+    } else {
+      message.reply('you have to be on voice channel 😡');
+    }
   },
 };
