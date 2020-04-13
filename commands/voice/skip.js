@@ -5,7 +5,7 @@ module.exports = {
     const { channel } = message.member.voice;
     if (!channel) return message.reply('you have to be on a voice channel 😡');
 
-    const { songDispatcher, queue } = message.guild.music;
+    const { songDispatcher, queue, looping } = message.guild.music;
     if (!songDispatcher) return message.reply("nothing's playing 😡");
 
     const count = args[0];
@@ -15,6 +15,7 @@ module.exports = {
     }
 
     message.reply('song skipped');
+    if (looping) queue.shift();
     songDispatcher.end();
   },
 };
